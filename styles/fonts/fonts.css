@@ -1,0 +1,45 @@
+
+@font-face {
+    font-family: 'vistol_sansbold';
+    src: url('vistolsans-bold-webfont.woff2') format('woff2'),
+         url('vistolsans-bold-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+
+
+
+@font-face {
+    font-family: 'vistol_sansitalic';
+    src: url('vistolsans-italic-webfont.woff2') format('woff2'),
+         url('vistolsans-italic-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+
+
+
+@font-face {
+    font-family: 'vistol_sansmedium';
+    src: url('vistolsans-medium-webfont.woff2') format('woff2'),
+         url('vistolsans-medium-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+
+
+
+@font-face {
+    font-family: 'vistol_sansregular';
+    src: url('vistolsans-regular-webfont.woff2') format('woff2'),
+         url('vistolsans-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
