@@ -1,71 +1,95 @@
-var fse = require("fs-extra");
-var Docker = require('dockerode');
-var docker = new Docker();
-const {v4: uuidv4} = require('uuid');
-const { exec } = require("child_process");
+const creator = require("./DockerCreator.js");
+const db = require("./database/Database").db;
+const express = require("express")
+const bodyParser = require('body-parser');
+const fileUpload = require('express-fileupload');
+const session = require('express-session')
+const { v4: uuidv4 } = require('uuid');
+const app = express()
+const port = 3000;
 
-var config = {}
+app.set('view engine', 'ejs');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.static(__dirname + '/public'));
+app.use(fileUpload({ createParentPath: true }));
+app.use(session({
+    genid: function(req) {
+      return uuidv4() // use UUIDs for session IDs
+    },
+    secret: 'keyboard cat'
+}))
 
-config.uuid = uuidv4()
-console.log(config.uuid)
+app.get('/', (req, res) => {
+    res.render('pages/index', req.session.renderInfos == undefined ? {} : req.session.renderInfos )
+    delete req.session.renderInfos
+    req.session.save((err) => {if (err != undefined) console.log(err)})
+})
 
-
-async function createTmpDir() {
-  await fse.mkdir("/tmp/" + config.uuid + "/");
-  await fse.mkdir("/tmp/" + config.uuid + "/Site");
-  await fse.copy("Site", "/tmp/"+config.uuid+"/Site/")
-}
-
-async function createDokerfile() {
-  var dockerfile = await fse.createWriteStream('/tmp/' + config.uuid + '/Dockerfile');
-  await dockerfile.write("FROM httpd:2.4\n")
-  await dockerfile.write("COPY ./Site /usr/local/apache2/htdocs/\n")
-  await dockerfile.end()
-}
-
-async function createImage() {
-  await exec("docker build -t " + config.uuid + " /tmp/" + config.uuid + "/", async (error, stdout, stderr) => {
-    if (error) {
-      console.log(`error: ${error.message}`);
-      return;
+app.post('/upload', (req, res) => {
+    try {
+        const regex = new RegExp('^([a-zA-z0-9])*\\.(\\w){2,}$', 'gm')
+        var dnsname = req.body.dnsname.toLowerCase();
+        if (req.body.dnsname == '') {
+            returnError(res, "On dirait que tu n'as pas mis de nom de domaine")
+            return
+        } else if (dnsname.match(regex) == null) {
+            returnError(res, "Ton nom de domaine n'est pas correct.. Il doit être écrit comme ceci: exemple.com")
+            return
+        }else if (!req.files) {
+            returnError(res, "Aucun fichier zip transféré")
+            return
+        } else {
+            var codezip = req.files.codezip;
+            if (!db.dnsnameIsFree(dnsname)) {
+                returnError(res, "Dommage, ce nom de domaine est déjà pris.. Essaye en un autre !")
+                return
+            }
+            if (codezip.mimetype == "application/zip") {
+                codezip.mv("./uploaded/" + dnsname + ".zip");
+                try {
+                    creator.deployWebsite(dnsname, "./uploaded/" + dnsname + ".zip", (err, ip) => {
+                        if (err != undefined) {
+                            returnError(res, "Une erreur est survenue, réessaye dans quelques minutes")
+                            return
+                        } else {
+                            db.addWebsite(dnsname, ip)
+                            res.status(200).send({ status: 200, path: "/launched", dnsname: dnsname, ip: ip })
+                            return
+                        }
+                    })
+                } catch (err) {
+                    returnError(res, "Aïe ! Une erreur est survenue lors du déploiement du site")
+                    return
+                }
+            } else {
+                returnError(res, "Ton zip n'a pas l'air d'être un zip")
+                return
+            }
+        }
+    } catch (error) {
+        console.log(error)
+        returnError(res, "Une erreur est survenue, mais je n'en dirais pas plus")
+        return
     }
-    if (stderr) {
-      console.log(`stderr: ${stderr}`);
-      return;
+})
+
+app.get('/sites', (req, res) => {
+    res.send({ websites: db.getAllWebsites() })
+})
+
+app.get('/launched/:dnsname/:ip', (req, res) => {
+    if (req.params['dnsname'] != undefined && req.params['ip'] != undefined) {
+        res.render("pages/launched", { dnsname: req.params['dnsname'], ip: req.params['ip']})
+    } else {
+        res.redirect("/")
     }
-    console.log(`stdout: ${stdout}`);
-  });
+})
+
+function returnError(res, error) {
+    res.status(400).send({ status: 400, error: error })
 }
 
-async function listImages() {
-  await docker.listImages({all: true}, (err, res) => {
-    res.forEach(container => {
-      console.log(container.RepoTags)
-      return;
-    });
-  })
-}
-
-async function startContainer() {
-  exec("docker run --name container_" + config.uuid + " -dit " + config.uuid, async (error, stdout, stderr) => {
-    var container = docker.getContainer("container_" + config.uuid)
-    container.inspect(async (err, datas) => {
-      var ip = datas.NetworkSettings.Networks.bridge.IPAddress
-      console.log(ip)
-      fse.appendFileSync('hosts', ip + ' salut\n');
-      exec("sudo ./refresh_dns")
-    })
-  });
-}
-
-function sleep(ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
-
-createTmpDir()
-.then(() => createDokerfile())
-.then(() => createImage())
-.then(async () => {await sleep(1000); listImages()})
-.then(async () => {await sleep(1000); startContainer()})
+app.listen(port, () => {
+    console.log("Application lancée sur le port " + port)
+})

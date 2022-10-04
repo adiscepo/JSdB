@@ -1,0 +1,42 @@
+<style>
+    @keyframes showing {
+        0% {right: -100%;}
+        40%, 55%, 80% {right: 3%;}
+        45% {right: 3.1%;}
+        50% {right: 2.9%;}
+    }
+    .popup_modal {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        flex-direction: row;
+
+        position: absolute;
+        top: 5%;
+        right: 3%;
+
+        background-color: #303036;
+        min-width: 15vw;
+        max-width: 25vw;
+        padding: 1em;
+
+        border-radius: 5px;
+        color: #ccc;
+
+        animation: showing 1.5s reverse;
+        /* box-shadow: 1px 1px 5px #9999EB; */
+    }
+
+    .popup_modal svg {
+        width: 0.8em;
+        margin-right: 20px;
+        fill: #9999EB;
+    }
+</style>
+
+<div class="popup_modal">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="50"/>
+    </svg>
+    <span><%= locals.popup_info %></span>
+</div>
