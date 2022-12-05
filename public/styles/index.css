@@ -1,0 +1,207 @@
+body {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1.2fr 1fr;
+    gap: 0px 0px;
+    min-height: 100vh;
+    grid-auto-flow: row;
+    grid-template-areas:
+        "header"
+        "table"
+        "footer";
+    border: 1rem solid var(--main-color);
+    box-sizing: border-box;
+    font-family: "vistol_sansregular";
+    font-size: 1em;
+    text-align: justify;
+}
+
+header {
+    font-size: 1.2rem;
+}
+
+#website_list {
+    align-self: center;
+    justify-self: center;
+    grid-area: table;
+    display: block;
+    box-sizing: border-box;
+    width: 75%;
+    margin: 1rem;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0px 0px 2px #023A3944;
+}
+
+#website_list_header {
+    display: flex;
+    padding-bottom: 1.5rem;
+    justify-content: space-between;
+}
+
+#website_list_header_text {
+    display: inline-block;
+    width: 80%;
+}
+
+#website_list_header_text h1 {
+    font-size: 1.5em;
+    color: #2c2c2c;
+}
+
+#website_list_header_text p {
+    font-size: 1em;
+    color: #656565;
+}
+
+#website_list_header_add_button {
+    display: inline-block;
+}
+
+#website_list_header_add_button a{
+    display: block;
+    box-sizing: border-box;
+    padding: 1rem 1.2rem;
+    border-bottom: 2px solid #ffcb69;
+    color: #2c2c2C;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all .2s ease;
+}
+
+#website_list_header_add_button a::before{
+    content: '+ ';
+}
+
+#website_list_header_add_button a:hover{
+    background-color: #ffcb69;
+    color: #fff;
+    /* border-radius: 0.3em 0.3em 0 0; */
+}
+
+#website_list_table {
+    max-height: 45vb;
+    overflow-y: scroll;
+}
+
+table {
+    width: 100%;
+    text-align: center;
+    border-spacing: 0;
+}
+
+table thead th {
+    background-color: #fff;
+    border-bottom: 2px solid #f4f6fa;
+    top: 0;
+    position: sticky;
+}
+
+table thead th:nth-child(3) {
+    text-align: left;
+}
+
+thead tr th{
+    color: #74808a;
+    font-size: 0.9em;
+    padding-bottom: 1em;
+}
+
+table tbody tr td{
+    padding: 0.8rem 0;
+}
+
+table tbody tr:nth-child(odd) {
+    background-color: #f4f6fa;
+}
+
+table .table_num{
+    width: 5%;
+}
+
+table .table_creator{
+    width: 10%;
+}
+
+table .table_link_dnsname{
+    text-align: left;
+}
+
+table .table_link_ip{
+    text-align: center;
+}
+
+table .table_link_dnsname a, table .table_link_ip a{
+    color: blue;
+}
+
+table .table_link_dnsname a::before, table .table_link_ip a::before{
+    content: 'http://';
+}
+
+table .table_status span{
+    display: inline-block;
+    font-size: 0.9rem;
+    padding: 2% 5%;
+    border: 2px solid black;
+    border-radius: 5rem;
+}
+
+table .status_created span::before{
+    content: "Créé";
+}
+table .status_running span::before{
+    content: "Actif";
+}
+table .status_restarting span::before{
+    content: "Redémarre";
+}
+table .status_exited span::before{
+    content: "Inactif";
+}
+table .status_paused span::before{
+    content: "En pause";
+}
+table .status_dead span::before{
+    content: "Mort";
+}
+table .status_undefined span::before{
+    content: "Indéfini";
+}
+
+table .status_running span{
+    background-color: #f4fff7;
+    border-color: #63d48d;
+    color: #5db580;
+}
+
+table .status_exited span, table .status_undefined span{
+    background-color: #f1f1f1;
+    border-color: #adadad;
+    color: #999999;
+}
+
+table .status_stopped span{
+    background-color: #fff4f4;
+    border-color: #d46363;
+    color: #b55d5d;
+}
+
+table .status_restarting span{
+    background-color: #fff4f4;
+    border-color: #e0ca4c;
+    color: #b59e5d;
+}
+
+table .status_created span{
+    background-color: #c7e9ff;
+    border-color: #74c0ff;
+    color: #2d88ff;
+}
+
+table .status_paused span{
+    background-color: #fffff2;
+    border-color: #fff01c;
+    color: #b6a33b;
+}

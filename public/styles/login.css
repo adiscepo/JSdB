@@ -1,0 +1,94 @@
+:root {
+    --button: #ffcb69;
+    --button-darker: #e8ac65;
+    --grey-back: #fbfbfe;
+    --grey-border: #9e9e9e;
+    --grey-text: #acacb6;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Cantarell';
+    background-color: var(--grey-back);
+    height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1rem solid;
+    border-image-slice: 1;
+    border-image-source: linear-gradient(to left top, var(--button), var(--button-darker));
+    overflow-x: hidden;
+}
+
+#login_card {
+    background-color: #fff;
+    position: relative;
+    width: 25%;
+    box-shadow: 0px 2px 14px #023A3944;
+    border-radius: 10px;
+    box-sizing: border-box;
+    padding: 3rem 2rem 2.5rem 2rem;
+    text-align: center;
+}
+
+#login_card img {
+    height: 128px;
+    position: absolute;
+    top: -64px;
+    left: calc(50% - 64px);
+}
+
+h1 {
+    font-size: 22px;
+    padding-bottom: 2rem;
+}
+
+h1 span {
+    display: block;
+    color: var(--grey-text);
+    font-size: 14px;
+}
+
+input[type=text], input[type=password] {
+    display: block;
+    width: 100%;
+    font-size: 16px;
+    padding: 1rem;
+    border: 1px solid var(--grey-border);
+    border-radius: 0.3rem;
+    box-sizing: border-box;
+    margin-bottom: 1rem;
+}
+
+button {
+    display: block;
+    padding: 1rem;
+    border-radius: 0.3rem;
+    box-sizing: border-box;
+    background-color: var(--button);
+    color: #797d62;
+    width: 100%;
+    border: 0px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+button:hover {
+    color: #fff;
+    background-color: var(--button-darker);
+}
+
+p, a {
+    color: var(--grey-text);
+    margin-top: 2rem;
+}
+
+p a:hover {
+    color: #000;
+}

@@ -1,0 +1,9 @@
+<% items.forEach(function (item) { %>
+    <% if (item.content == undefined) { %>
+        <option name="<%= item.name %>">
+        <%= dirname + "/" + item.name %>
+        </option>
+    <% } else { %>
+        <%- include('../partials/select_websites', { items: item.content, dirname: dirname + "/" + item.name }) %>
+    <% } %>
+<% }) %>

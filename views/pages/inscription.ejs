@@ -1,0 +1,73 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <%- include('../partials/head_links'); %>
+        <link rel="stylesheet" href="/styles/add_website.css">
+        <link rel="stylesheet" href="/styles/form.css">
+        <title>Hermès - Connexion</title>
+    </head>
+    <body>
+        <header>
+            <%- include("../partials/header_title", { 
+                title: "I.N.S.C.R.I.P.T.I.O.N", 
+                subtitle: "Interface Novatrice Servant, Conformément aux Règles Internes, à Pénétrer Tangiblement l'Intérieur de l'Onirique Navigateur"}) 
+            %>
+        </header>
+        <form action="/signup" method="post">
+                <label for="username">Nom d'utilisateur: 
+                    <input type="text" name="username" id="username">
+                </label>
+                <label for="password">Mot de passe:
+                    <input type="password" name="password" id="password">
+                </label>
+            <button>Se connecter</button>
+            <a href="/login" style="margin-top: 15px;">Se connecter</a>
+        </form>
+        <%- include('../partials/popup_modal'); %>
+    </body>
+    <script>
+        
+    </script>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/styles/login.css">
+        <link rel="shortcut icon" href="images/nyan-cat.gif" type="image/x-icon">
+        <title>Inscrivez vous</title>
+    </head>
+    <body>
+        <div id="login_card">
+            <img src="/images/porygon.png" alt="Porygon" id="porygon">
+            <h1>Inscrivez vous<span>en remplissant le formulaire</span></h1>
+            <form action="/signup" method="post">
+                <input type="text" name="username" id="username" placeholder="Entrez votre pseudo" autocomplete="off">
+                <input type="password" name="password" id="password" placeholder="Entrez votre mot de passe">
+                <button>S'inscrire</button>
+            </form>
+            <p>Déjà un compte ? <a href="/login">Connectez-vous</a></p>
+        </div>
+        <%- include('../partials/popup_modal'); %>
+    </body>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            if (window.location.search.includes("nameAlreadyTaken")) {
+                console.log("q")
+                document.getElementById("username").style.borderColor = "#ae2012"
+                showPopupInfo("Ce nom d'utilisateur est déjà utilisé")
+            }
+            if (window.location.search.includes("passwordLow")) {
+                showPopupInfo("Mot de passe trop court (5 caractères min)")
+                document.getElementById("password").style.borderColor = "red"
+            }
+            history.pushState("", document.title, window.location.pathname);
+        })
+    </script>
+</html>

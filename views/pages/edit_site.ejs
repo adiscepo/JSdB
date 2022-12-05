@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Édition du site</title>
+        <%- include('../partials/head_links') %>
+        <link rel="stylesheet" href="/styles/form.css">
+        <style>
+            :root {
+                --main-color: #CCCCF5; /* Couleur principale du site, utilisé pour les bordures */
+                --main-color-light: #DDDDF8;
+                --main-color-lighter: #EEEEFC;
+                --main-color-dark: #AAAAEE;
+                --main-color-darker: #9999EB;
+                
+                --input-border: #ccc;
+
+                --text-light: #AAAAAA;
+            }
+
+            @keyframes wave {
+                25%, 75% { transform: rotate(-10deg); }
+                50%  { transform: rotate(10deg); }
+            }
+
+            * {
+                margin: 0;
+            }
+
+            body {
+                display: grid;
+                grid-template-columns: 1fr;
+                grid-template-rows: 1fr 10fr 1fr;
+                height: 100vh;
+                grid-auto-flow: row;
+                grid-template-areas:
+                    "header"
+                    "form"
+                    "footer";
+                border: 30px solid var(--main-color);
+                padding: 0 2%;
+                box-sizing: border-box;
+                font-family: "vistol_sansregular";
+                font-size: 1.3em;
+                text-align: justify;
+            }
+
+            header {
+                grid-area: header;
+            }
+
+            #form {
+                grid-area: form;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                height: 90%;
+            }
+
+            select {
+                margin: 5px 0px 15px 0px;
+                border: 1px solid var(--input-border);
+                display: inline-block;
+                padding: 1% 3%;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+            textarea {
+                padding: 5px;
+                background-color: #282c34;
+                color: #b4bbc9;
+                font-size: 16px;
+                height: 100%;
+                width: 100%;
+                resize: none;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <%- include("../partials/header_title", { title: "D.A.N.T.E", title_id: 'hermes', subtitle: "Diligant Artefact Nécéssitant une Technique Évidente"}) %>
+        </header>
+        <div id="form">
+            <select autocomplete="off" name="code_select" id="code_select">
+                <option value="" disabled selected>Selectionner le fichier que vous voulez modifier</option>
+                <%- include("../partials/select_websites", { items: files, dirname: "" }) %>
+            </select>
+            <textarea  autocomplete="off" name="code_site" id="code_site" cols="30" rows="10"></textarea>
+            <button type="button" id="submit">Valider</button>
+        </div>
+        <%- include('../partials/footer'); %>
+    </body>
+    <script>
+        var codeIsSaved = true
+        var textarea = document.getElementById("code_site")
+        var button = document.getElementById("submit")
+        var code_selector = document.getElementById("code_select")
+        var current_code = ""
+
+        function saveCode() {
+            if (code_selector.value !== "") {
+                var code = textarea.value
+                codeIsSaved = true
+                var filename = code_selector.value
+                fetch("/site/<%= name %>", {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        path: filename,
+                        code: code
+                    })
+                })
+            }
+        }
+
+        button.addEventListener("click", (e) => {
+            e.preventDefault()
+            saveCode()
+        })
+
+        textarea.addEventListener("change", (e) => {
+            codeIsSaved = false
+        })
+
+        textarea.addEventListener('keydown', (e) => {
+            if (e.keyCode == 9) {
+                e.preventDefault();
+                var start = textarea.selectionStart;
+                var end = textarea.selectionEnd;
+
+                textarea.value = textarea.value.substring(0, start) + "\t" + textarea.value.substring(end);
+
+                textarea.selectionStart = textarea.selectionEnd = start + 1;
+            }
+        });
+
+        document.addEventListener('keydown', e => {
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                saveCode()
+            }
+        });
+
+        var files = <%- JSON.stringify(files) %>;
+        var code = getAllCode(files)
+        code_selector.addEventListener("change", (e) => {
+            if (!codeIsSaved){
+                if (confirm("Tes modifications n'ont pas été sauvées, veux-tu quand même changer de fichier ?")) {
+                    changeCodePage()
+                } else {
+                    code_selector.value = current_code
+                }
+            } else {
+                changeCodePage()
+            }
+        })
+
+        function changeCodePage() {
+            var id_file = code_selector.options[code_selector.selectedIndex].getAttribute("name")
+            textarea.value = code[id_file]
+            current_code = code_selector.options[code_selector.selectedIndex].value
+            codeIsSaved = true
+        }
+        
+        function getAllCode(files, res={}) {
+            var decoder = new TextDecoder("utf-8")
+
+            res = res || {}
+            
+            for (var elem in files) {
+                if (files[elem].type == "file") {
+                    var codedCode = new Uint8Array(files[elem].codeBuffer.data)
+                    res[files[elem].name] = decoder.decode(codedCode)
+                } else {
+                    res = Object.assign({}, res, getAllCode(files[elem].content, res))
+                }
+            }
+            return res
+        }
+    </script>
+</html>

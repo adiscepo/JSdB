@@ -1,0 +1,153 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #cdd2de;
+    padding: 5%;
+    font-family: "Cantarell";
+}
+
+#website_list {
+    display: block;
+    width: 75%;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0px 2px 14px #023A3944;
+}
+
+#website_list_header {
+    display: flex;
+    padding-bottom: 1.5rem;
+    justify-content: space-between;
+}
+
+#website_list_header_text {
+    display: inline-block;
+    width: 80%;
+}
+
+#website_list_header_text h1 {
+    font-size: 1.5em;
+    color: #2c2c2c;
+}
+
+#website_list_header_text p {
+    font-size: 1em;
+    color: #656565;
+}
+
+#website_list_header_add_button {
+    display: inline-block;
+}
+
+#website_list_header_add_button a{
+    display: block;
+    box-sizing: border-box;
+    padding: 1rem 1.2rem;
+    border-bottom: 2px solid #ffcb69;
+    color: #2c2c2C;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all .2s ease;
+}
+
+#website_list_header_add_button a::before{
+    content: '+ ';
+}
+
+#website_list_header_add_button a:hover{
+    background-color: #ffcb69;
+    color: #fff;
+    /* border-radius: 0.3em 0.3em 0 0; */
+}
+
+#website_list_table {
+    max-height: 45vb;
+    overflow-y: scroll;
+}
+
+table {
+    width: 100%;
+    text-align: center;
+    border-spacing: 0;
+}
+
+table thead th {
+    background-color: #fff;
+    border-bottom: 2px solid #f4f6fa;
+    top: 0;
+    position: sticky;
+}
+
+thead tr th{
+    color: #74808a;
+    font-size: 0.9em;
+    padding-bottom: 1em;
+}
+
+table tbody tr td{
+    padding: 0.8rem 0;
+}
+
+table tbody tr:nth-child(odd) {
+    background-color: #f4f6fa;
+}
+
+table .table_num{
+    width: 5%;
+}
+
+table .table_creator{
+    width: 10%;
+    text-align: left;
+}
+
+table .table_link{
+    text-align: left;
+}
+
+table .table_link a{
+    color: blue;
+}
+
+table .table_link a::before{
+    content: 'http://';
+}
+
+table .table_status span{
+    font-size: 0.9rem;
+    padding: 2% 5%;
+    border: 2px solid black;
+    border-radius: 5rem;
+}
+
+table .status_actived span::before{
+    content: "Actif";
+}
+table .status_inactived span::before{
+    content: "Inactif";
+}
+table .status_stopped span::before{
+    content: "Arrêté";
+}
+
+table .status_actived span{
+    background-color: #f4fff7;
+    border-color: #63d48d;
+    color: #5db580;
+}
+
+table .status_inactived span{
+    background-color: #fefdf5;
+    border-color: #ffc963;
+    color: #e99242;
+}
+
+table .status_stopped span{
+    background-color: #fff4f4;
+    border-color: #d46363;
+    color: #b55d5d;
+}

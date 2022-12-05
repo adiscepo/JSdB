@@ -1,4 +1,14 @@
 <style>
+    :root {
+        --blue: #00A4E1;
+        --blue-darker: #019dd5;
+        --dark-back: #303036;
+        --grey-back: #fbfbfe;
+        --grey-border: #9e9e9e;
+        --grey-text: #acacb6;
+        --red-error: #ff5d5d;
+    }
+    
     @keyframes showing {
         0% {right: -100%;}
         40%, 55%, 80% {right: 3%;}
@@ -23,23 +33,24 @@
         top: 5%;
         right: 3%;
 
-        background-color: #303036;
+        background-color: var(--grey-back);
         min-width: 15vw;
         max-width: 25vw;
         padding: 1em;
 
         border-radius: 5px;
-        color: #ccc;
+
+        color: var(--dark-back);
 
         cursor: pointer;
 
-        box-shadow: 1px 1px 5px #9999EB;
+        box-shadow: 0px 2px 14px #023A3944;
     }
     
     #popup_modal svg {
         width: 0.8em;
         margin-right: 20px;
-        fill: #9999EB;
+        fill: var(--red-error);
     }
 
     .popup_modal_show {
@@ -58,3 +69,24 @@
     </svg>
     <span></span>
 </div>
+
+<script>
+    var popup = document.getElementById("popup_modal")
+    popup.addEventListener("click", (e) => { disappearPopupInfo() })
+
+    function showPopupInfo(error) {
+        popup.style.display = "flex"
+        popup.children[1].innerHTML = error
+        popup.classList.add("popup_modal_show")
+    }
+
+    function disappearPopupInfo() {
+        popup.classList.add("popup_modal_hide")
+        popup.classList.remove("popup_modal_show")
+        new Promise(r => setTimeout(r, 1500)).then(() => popup.style.display = "none")
+    }
+
+    function removePopup() {
+        popup.classList.remove("popup_modal_show")
+    }
+</script>

@@ -1,45 +1,18 @@
 var fse = require("fs-extra");
 var Docker = require('dockerode');
 var docker = new Docker();
-const extract = require('extract-zip')
-// const {v4: uuidv4} = require('uuid');
+const extract = require('decompress')
 const { exec } = require("child_process");
 
-// var config = {}
-
-// config.uuid = uuidv4()
-// console.log(config.uuid)
-
-
 async function createTmpDir(name, zipfile) {
-  await fse.mkdir("./websites/" + name + "/");
-  await fse.mkdir("./websites/" + name + "/Site");
   try {
-    await extract(zipfile, { dir: "/tmp/"+name })
+    await fse.mkdir(__dirname + "/websites/" + name);
+    await extract(zipfile, __dirname + "/websites/" + name + "/Site")
     console.log('Extraction complete')
   } catch (err) {
+    // If an error occured during the creation of files, we delete everything
+    await fse.rm(__dirname + "/websites/" + name, { recursive: true, force: true })
   }
-}
-
-async function createDokerfile(name) {
-  var dockerfile = await fse.createWriteStream('/tmp/' + name + '/Dockerfile');
-  await dockerfile.write("FROM httpd:2.4\n")
-  await dockerfile.write("COPY ./Site /usr/local/apache2/htdocs/\n")
-  await dockerfile.end()
-}
-
-async function createImage(name) {
-  await exec("docker build -t " + name + " /tmp/" + name + "/", async (error, stdout, stderr) => {
-    if (error) {
-      console.log(`error: ${error.message}`);
-      return;
-    }
-    if (stderr) {
-      console.log(`stderr: ${stderr}`);
-      return;
-    }
-    console.log(`stdout: ${stdout}`);
-  });
 }
 
 async function listImages() {
@@ -52,20 +25,29 @@ async function listImages() {
 }
 
 async function startContainer(name, fn) {
-  exec("docker run --name container_" + name + " -dit " + name, async (error, stdout, stderr) => {
-    var container = docker.getContainer("container_" + name)
-    container.inspect(async (err, datas) => {
-      try {
-        var ip = datas.NetworkSettings.Networks.bridge.IPAddress
-        console.log(ip)
-        fse.appendFileSync('hosts', ip + ' ' + name + '\n');
-        exec("sudo ./refresh_dns")
-        fn(err, ip)
-      } catch(err) {
-        fn(err)
-      }
+  var container
+  docker.createContainer({
+    Image: "httpd:2.4",
+    AttachStderr: true,
+    AttachStdout: true,
+    AttachStdin: false,
+    name: "container_" + name,
+    // Bind the container with the files of the webpage
+    Binds: [__dirname + '/websites/' + name + '/Site:/usr/local/apache2/htdocs/'],
+  }).then(async (created_container) => {
+    container = created_container
+    container.start()
+    await docker.getNetwork("bridge").connect({
+      Container: container.id
     })
-  });
+  }).then(() => {
+    container.inspect((err, data) => {
+      var ip = data.NetworkSettings.Networks.bridge.IPAddress
+      fse.appendFileSync('hosts', ip + ' ' + name + '\n');
+      exec("sudo ./refresh_dns")
+      fn(err, ip, container.id)
+    })
+  }).catch((err) =>{ fn(err) })
 }
 
 function sleep(ms) {
@@ -76,15 +58,13 @@ function sleep(ms) {
 
 // function deployWebsite(name, zipfile, fn) {
 //     createTmpDir(name, zipfile)
-//     .then(() => createDokerfile(name))
-//     .then(() => createImage(name))
-//     .then(async () => {await sleep(1000); listImages()})
 //     .then(async () => {await sleep(1000); startContainer(name, fn)})
 // }
 
+// DEVELOPMENT FUNCTION
 function deployWebsite(name, zipfile, fn) {
   console.log("Docker processing...")
-  sleep(1500).then(() => {
+  return sleep(1500).then(() => {
     console.log("That's fine !")
     fn(undefined, "10.0.0.1")
   })

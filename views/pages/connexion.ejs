@@ -1,0 +1,78 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <%- include('../partials/head_links'); %>
+        <link rel="stylesheet" href="/styles/add_website.css">
+        <link rel="stylesheet" href="/styles/form.css">
+        <title>Hermès - Connexion</title>
+    </head>
+    <body>
+        <header>
+            <%- include("../partials/header_title", { 
+                title: "S.E.S.A.M.E", 
+                subtitle: "Système Extrêmement Sûr d'Authentification au Monde Enfoui"}) 
+            %>
+        </header>
+        <form action="/login" method="post">
+                <label for="username">Nom d'utilisateur: 
+                    <input type="text" name="username" id="username">
+                </label>
+                <label for="password">Mot de passe:
+                    <input type="password" name="password" id="password">
+                </label>
+            <button>Se connecter</button>
+            <a href="/signup" style="margin-top: 15px;">S'inscrire</a>
+        </form>
+        <%- include('../partials/popup_modal'); %>
+    </body>
+    <script>
+        if (window.location.search.includes("error")) {
+            showPopupInfo("Nom d'utilisateur ou mot de passe incorrect")
+        }
+        if (window.location.search.includes("accountCreated")) {
+            showPopupInfo("Ton compte a bien été créé ! <br> Tu peux maintenant te connecter !")
+        }
+    </script>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/styles/login.css">
+        <link rel="shortcut icon" href="images/nyan-cat.gif" type="image/x-icon">
+        <title>Connectez vous</title>
+    </head>
+    <body>
+        <div id="login_card">
+            <img src="/images/porygon.png" alt="Porygon" id="porygon">
+            <h1>Entrez votre pseudo
+            <span>pour accéder au site</span>
+            </h1>
+            <form action="/login" method="post">
+                <input type="text"  name="username" placeholder="Entrez votre pseudo" autocomplete="off">
+                <input type="password" name="password" placeholder="Entrez votre mot de passe" id="password">
+                <button>Se connecter</button>
+            </form>
+            <p>Pas encore de compte ? <a href="/signup">Inscrivez-vous</a></p>
+        </div>
+        <%- include('../partials/popup_modal'); %>
+    </body>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            if (window.location.search.includes("error")) {
+                showPopupInfo("Nom d'utilisateur ou mot de passe incorrect")
+            }
+            if (window.location.search.includes("accountCreated")) {
+                showPopupInfo("Ton compte a bien été créé ! <br> Tu peux maintenant te connecter !")
+            }
+
+            history.pushState("", document.title, window.location.pathname);
+        })
+    </script>
+</html>
