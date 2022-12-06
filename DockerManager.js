@@ -9,7 +9,7 @@ class DockerManager {
     async fetchContainers() {
         var containers = await this.docker.listContainers({all: true})
         for (var i in containers) {
-            this.containers[containers[i].Names[0]] = containers[i];
+            this.containers[containers[i].Id] = containers[i];
         }
         return this.containers
     }
@@ -18,8 +18,12 @@ class DockerManager {
         this.containers[key] = val
     }
 
-    getContainer(id) {
-        return this.docker.getContainer(id)
+    async getContainer(id) {
+        return this.containers[id]
+    }
+
+    getContainers() {
+        return this.containers
     }
 
     getContainerStatus(name) {

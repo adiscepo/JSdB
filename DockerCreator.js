@@ -44,7 +44,7 @@ async function startContainer(name, fn) {
     container.inspect((err, data) => {
       var ip = data.NetworkSettings.Networks.bridge.IPAddress
       fse.appendFileSync('hosts', ip + ' ' + name + '\n');
-      exec("sudo ./refresh_dns")
+      // exec("sudo ./refresh_dns")
       fn(err, ip, container.id)
     })
   }).catch((err) =>{ fn(err) })
@@ -56,18 +56,19 @@ function sleep(ms) {
   });
 }
 
-// function deployWebsite(name, zipfile, fn) {
-//     createTmpDir(name, zipfile)
-//     .then(async () => {await sleep(1000); startContainer(name, fn)})
-// }
-
-// DEVELOPMENT FUNCTION
-function deployWebsite(name, zipfile, fn) {
-  console.log("Docker processing...")
-  return sleep(1500).then(() => {
-    console.log("That's fine !")
-    fn(undefined, "10.0.0.1")
-  })
+if (process.env.NODE_ENV === 'production') {
+  function deployWebsite(name, zipfile, fn) {
+      createTmpDir(name, zipfile)
+      .then(async () => {await sleep(1000); startContainer(name, fn)})
+  }
+} else {
+  function deployWebsite(name, zipfile, fn) {
+    console.log("Docker processing...")
+    return sleep(1500).then(() => {
+      console.log("That's fine !")
+      fn(undefined, "10.0.0.1")
+    })
+  }
 }
 
 module.exports.deployWebsite = deployWebsite;

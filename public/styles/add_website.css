@@ -1,7 +1,7 @@
 body {
     display: grid;
     grid-template-columns: 1fr 4fr 1fr;
-    grid-template-rows: 1fr 2fr auto;
+    grid-template-rows: 0fr 1fr 0fr;
     gap: 0px 0px;
     height: 100vh;
     grid-auto-flow: row;
@@ -9,11 +9,12 @@ body {
         "leftside_infos header"
         "leftside_infos form"
         "leftside_infos footer";
-    border: 30px solid var(--main-color);
+    text-align: justify;
+    min-height: 100vh;
+    border: 1rem solid var(--main-color);
     box-sizing: border-box;
     font-family: "vistol_sansregular";
-    font-size: 1.3em;
-    text-align: justify;
+    font-size: 1em;
 }
 
 u[id=domain_name] {

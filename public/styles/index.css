@@ -1,7 +1,7 @@
 body {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 1fr 1.2fr 1fr;
+    grid-template-rows: 0fr 1fr 0fr;
     gap: 0px 0px;
     min-height: 100vh;
     grid-auto-flow: row;
@@ -85,6 +85,11 @@ header {
     overflow-y: scroll;
 }
 
+#empty_table {
+    text-align: center;
+    color: #858585;
+}
+
 table {
     width: 100%;
     text-align: center;
@@ -136,9 +141,9 @@ table .table_link_dnsname a, table .table_link_ip a{
     color: blue;
 }
 
-table .table_link_dnsname a::before, table .table_link_ip a::before{
+/* table .table_link_dnsname a::before {
     content: 'http://';
-}
+} */
 
 table .table_status span{
     display: inline-block;
@@ -176,13 +181,13 @@ table .status_running span{
     color: #5db580;
 }
 
-table .status_exited span, table .status_undefined span{
+table .status_undefined span {
     background-color: #f1f1f1;
     border-color: #adadad;
     color: #999999;
 }
 
-table .status_stopped span{
+table .status_stopped span, table .status_exited span{
     background-color: #fff4f4;
     border-color: #d46363;
     color: #b55d5d;

@@ -10,7 +10,7 @@ function hashPasswd(passwd) {
 
 class Database {
     constructor() {
-        console.log("Base de données construite")
+        console.log("Base de données chargée depuis " + config.db_path)
         this.db = new loki(config.db_path, {
             autoload: true,
             autoloadCallback : () => {
@@ -22,7 +22,7 @@ class Database {
                     }
                 }
             },
-            autosave: true, 
+            autosave: true,
             autosaveInterval: 4000
         });
     }
@@ -32,6 +32,7 @@ class Database {
         if (users.find({ name: { $eq: name } }).length == 0){
             var userId = uuidv4()
             users.insert({ _id: userId, name: name, passwd: hashPasswd(passwd) }) 
+            this.db.saveDatabase()
             return userId
         } else {
             return 0
@@ -51,7 +52,8 @@ class Database {
     }
 
     addWebsite(userid, dnsname, ip, container_id) { 
-        this.db.getCollection("posts").insert({ _id: uuidv4(), userId: userid, dnsname: dnsname, ip: ip , containerId: container_id }) 
+        this.db.getCollection("posts").insert({ _id: uuidv4(), userId: userid, dnsname: dnsname, ip: ip , containerId: container_id })
+        this.db.saveDatabase()
     }
 
     getUserIdOfWebsite(dnsname) {
@@ -68,19 +70,36 @@ class Database {
     async getAllWebsites() {
         var sites = this.db.getCollection("posts").chain().simplesort("dnsname").data();
         var dm = new DockerManager()
-        await dm.fetchContainers().then((res) => {
-            for (var site in sites) {
-                sites[site]["creatorName"] = this.getUsername(sites[site].userId);
-                try {
-                    var state = dm.getContainer(sites[site]["container_id"]).State
-                    if (state === undefined) sites[site]["status"] = "undefined" 
-                    else sites[site]["status"] = state 
-                }catch(error) {
-                    console.log(error)
+        await dm.fetchContainers().then(async (res) => {
+            for (var container_id in res) {
+                for (var site in sites) {
+                    if (res[container_id].Names[0] == "/container_" + sites[site]["dnsname"]) {
+                        sites[site]["creatorName"] = await this.getUsername(sites[site].userId);
+                        sites[site]["status"] = res[container_id].State
+                        var ip = res[container_id].NetworkSettings.Networks.bridge.IPAddress
+                        if (ip === ''){
+                            sites[site]["ip"] = "Hors-ligne"
+                        } else {
+                            sites[site]["ip"] = ip
+                        }
+                    } else if (sites[res[container_id].Names[0].split("/container_")[1]] == undefined) {
+                        var new_site = {}
+                        var sitename = res[container_id].Names[0].split("/container_")[1]
+                        new_site["dnsname"] = sitename;
+                        new_site["creatorName"] = "Inconnu";
+                        new_site["status"] = res[container_id].State
+                        var ip = res[container_id].NetworkSettings.Networks.bridge.IPAddress
+                        if (ip === ''){
+                            new_site["ip"] = "Hors-ligne"
+                        } else {
+                            new_site["ip"] = ip
+                        }
+                        sites.push(new_site)
+                    }
                 }
             }
+            return sites
         })
-        console.log(sites)
         return sites
     }
 

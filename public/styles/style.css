@@ -83,7 +83,7 @@ footer p {
     color: var(--text-light);
 }
 
-a, a:visited, #empty_table {
+a, a:visited {
     color: var(--main-color-darkest);
     text-decoration: none;
 }
